@@ -14,16 +14,17 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------
-# Carga de variables de entorno (se ejecuta una sola vez)
+# Carga de variables de entorno
 # ----------------------------------------------------------------------
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 if not OPENAI_API_KEY:
-    logger.warning("OPENAI_API_KEY no está configurada. El asistente no podrá llamar al modelo.")
-
-
+    logger.warning(
+        "OPENAI_API_KEY no está configurada. "
+        "El asistente no podrá llamar al modelo."
+    )
 
 # Modelo por defecto (puede sobrescribirse con la variable de entorno)
 DEFAULT_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")

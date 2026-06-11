@@ -44,8 +44,8 @@ class TenerifeAssistant:
         self.top_p = top_p
         self.max_tokens = max_tokens
 
-        # Cliente OpenAI
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        # Cliente OpenAI (lazy loading)
+        self.client = None
 
         print("DEBUG MODEL:", self.model)
 
@@ -53,14 +53,30 @@ class TenerifeAssistant:
         logger.info(f"Cargando pipeline RAG desde {pdf_path}")
         self.rag_bundle = build_rag_pipeline(pdf_path)
 
-        # Memoria de conversación
+        # Memoria de conversación (sin cliente)
         self.memory = ConversationMemory(
             max_tokens=MAX_TOKENS_CONTEXT,
             model=self.model,
-            client=self.client   # ← NECESARIO
+            client=None
         )
 
         logger.info("TenerifeAssistant listo para responder preguntas.")
+
+    # ------------------------------------------------------------------
+    # Lazy loading del cliente OpenAI
+    # ------------------------------------------------------------------
+    def _get_client(self):
+        """
+        Crea el cliente OpenAI solo cuando es necesario.
+        Esto evita errores en CI y en tests sin API key.
+        """
+        if self.client is None:
+            if not OPENAI_API_KEY:
+                raise RuntimeError(
+                    "No se puede llamar al modelo sin OPENAI_API_KEY"
+                )
+            self.client = OpenAI(api_key=OPENAI_API_KEY)
+        return self.client
 
     # ------------------------------------------------------------------
     # 1️⃣  Respuesta completa (no streaming)
@@ -81,8 +97,10 @@ class TenerifeAssistant:
             use_rag=use_rag,
         )
 
+        client = self._get_client()
+
         try:
-            response = self.client.chat.completions.create(
+            response = client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 tools=TOOLS_SCHEMAS,
@@ -96,7 +114,7 @@ class TenerifeAssistant:
                 use_rag=use_rag,
                 memory=self.memory,
                 rag_bundle=self.rag_bundle,
-                client=self.client,
+                client=client,
             )
 
         except Exception:
@@ -129,9 +147,11 @@ class TenerifeAssistant:
             use_rag=use_rag,
         )
 
+        client = self._get_client()
+
         # 1️⃣ Primera llamada (streaming)
         try:
-            stream = self.client.chat.completions.create(
+            stream = client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 tools=TOOLS_SCHEMAS,
@@ -198,7 +218,7 @@ class TenerifeAssistant:
             )
 
             try:
-                second = self.client.chat.completions.create(
+                second = client.chat.completions.create(
                     model=self.model,
                     messages=followup,
                     max_tokens=2048,

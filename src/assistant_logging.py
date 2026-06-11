@@ -13,9 +13,11 @@ from dotenv import load_dotenv
 # ----------------------------------------------------------------------
 load_dotenv()
 
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 if not OPENAI_API_KEY:
-    raise ValueError("Falta la variable de entorno OPENAI_API_KEY")
+    logger.warning("OPENAI_API_KEY no está configurada. El asistente no podrá llamar al modelo.")
+
 
 # Modelo por defecto (puede sobrescribirse con la variable de entorno)
 DEFAULT_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")

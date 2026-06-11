@@ -1,0 +1,38 @@
+
+# Modelos de lenguaje y configuración
+
+openai>=1.30.0          # Cliente oficial para usar modelos de OpenAI
+python-dotenv>=1.0.1    # Carga variables de entorno desde .env
+
+# RAG: carga de documentos, embeddings y búsqueda semántica
+
+langchain>=1.0.0                # Framework para orquestar cadenas LLM
+langchain-community>=0.2.0      # Integraciones adicionales (FAISS, loaders, etc.)
+langchain-text-splitters>=0.0.1 # Utilidades para dividir texto en chunks
+faiss-cpu>=1.8.0                # Índice vectorial para recuperación semántica
+pypdf>=4.2.0                    # Lectura y extracción de texto desde PDFs
+
+# Interfaz web del asistente
+
+streamlit>=1.34.0       # UI web para interactuar con el asistente
+
+# Tokenización y utilidades LLM
+
+tiktoken>=0.7.0         # Cálculo de tokens para modelos OpenAI
+
+# Ciencia de datos / soporte
+
+numpy>=1.26.4           # Operaciones numéricas
+pandas>=2.2.2           # Manipulación de datos tabulares
+matplotlib>=3.8.0       # Gráficos para la evaluación del RAG
+# Notebooks y entorno interactivo
+
+ipykernel>=6.29.0       # Kernel de Python para Jupyter
+jupyter>=1.0.0          # Entorno de notebooks
+nbformat>=5.10.0        # Crear y manipular notebooks desde scripts
+
+# Utilidades generales y calidad de código
+
+requests>=2.32.0        # Peticiones HTTP
+pytest>=8.2.0           # Tests automatizados
+ruff>=0.6.0             # Linter y formateador rápido

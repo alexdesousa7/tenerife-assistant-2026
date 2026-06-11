@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Archivos de entorno (variables privadas)
+.env
+.env.*
+!.env.template
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Configuración local
+.env
+.env.*
+!.env.template
+
+# Cache
+.cache/
+pytest_cache/

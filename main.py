@@ -30,7 +30,7 @@ st.set_page_config(
 # ----------------------------------------------------------------------
 # Cabecera
 # ----------------------------------------------------------------------
-st.title("🏖️🌋Asistente Turístico de Tenerife 2026🏝️👙🌞")
+st.title("🏖️🌋 Asistente Turístico de Tenerife 2026 🏝️👙🌞")
 st.markdown("*Descubre la isla de Tenerife con inteligencia artificial*")
 
 st.divider()
@@ -71,6 +71,9 @@ with st.sidebar:
     st.markdown("- 🌤️  `get_weather` (tiempo real)")
     st.markdown("- 🚌  `get_bus_stops` (mock)")
     st.markdown("- 🍽️  `get_restaurant_offers` (mock)")
+    st.markdown("- 📷  `get_webcams` (webcams en directo)")
+    st.markdown("- 🚴  `get_bike_rentals` (alquiler de bicicletas)")
+    # st.markdown("- 🚌  `get_transport_info` (rutas TITSA/Moovit)")  # opcional
 
 # ----------------------------------------------------------------------
 # Mostrar historial del chat
@@ -95,9 +98,20 @@ if prompt:
 
     # Detectar si la pregunta requiere herramientas
     needs_tool = any(keyword in prompt.lower() for keyword in [
+        # Clima
         "clima", "tiempo", "temperatura",
-        "guagua", "parada", "transporte",
-        "restaurante", "comida", "oferta"
+
+        # Transporte
+        "guagua", "parada", "transporte", "bus", "titsa", "moovit",
+
+        # Restaurantes
+        "restaurante", "comida", "oferta", "menú",
+
+        # Webcams
+        "webcam", "cámara", "camara", "playa en directo",
+
+        # Bicicletas
+        "bici", "bicicleta", "alquiler de bicicletas",
     ])
 
     # Generar respuesta del asistente

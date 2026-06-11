@@ -1,7 +1,6 @@
 """
 tools.py — Herramientas externas para el Asistente Turístico de Tenerife
 ------------------------------------------------------------------------
-
 Este módulo define las herramientas que el asistente puede llamar mediante
 Function Calling de OpenAI.
 
@@ -9,8 +8,9 @@ Incluye:
 - get_weather: API real (OpenWeatherMap)
 - get_bus_stops: API real + fallback mock
 - get_restaurant_offers: API real + fallback mock
-- Manejo robusto de errores
-- Logging integrado
+- get_webcams: webcams oficiales de Tenerife
+- get_bike_rentals: alquiler de bicicletas
+- get_transport_info: rutas aproximadas TITSA/Moovit (opcional)
 """
 
 import os
@@ -51,7 +51,6 @@ class WeatherResponse:
 # ----------------------------------------------------------------------
 def get_weather(location: str, date: str = None) -> Dict[str, Any]:
 
-    # 1. Normalizar ubicaciones comunes
     NORMALIZED_LOCATIONS = {
         "tenerife": "Santa Cruz de Tenerife",
         "norte de tenerife": "Puerto de la Cruz",
@@ -62,7 +61,6 @@ def get_weather(location: str, date: str = None) -> Dict[str, Any]:
     if loc_key in NORMALIZED_LOCATIONS:
         location = NORMALIZED_LOCATIONS[loc_key]
 
-    # 2. Si no viene fecha → usar hoy
     if date is None:
         date = datetime.date.today().isoformat()
 
@@ -87,7 +85,6 @@ def get_weather(location: str, date: str = None) -> Dict[str, Any]:
 
         response = requests.get(url, params=params, timeout=DEFAULT_TIMEOUT)
 
-        # 3. Fallback técnico si la API devuelve 404
         if response.status_code == 404 and location == "Santa Cruz de Tenerife":
             logger.info("Fallback a Icod el Alto para OpenWeatherMap")
             location = "Icod el Alto"
@@ -123,9 +120,6 @@ def get_weather(location: str, date: str = None) -> Dict[str, Any]:
         }
 
 
-# ----------------------------------------------------------------------
-# SCHEMA DE WEATHER  ← IMPORTANTE
-# ----------------------------------------------------------------------
 weather_schema = {
     "name": "get_weather",
     "description": "Obtiene la predicción del tiempo usando OpenWeatherMap",
@@ -289,37 +283,142 @@ restaurant_schema = {
 
 
 # ----------------------------------------------------------------------
-# 4. REGISTRO DE HERRAMIENTAS
+# 4. NUEVAS TOOLS
+# ----------------------------------------------------------------------
+
+# ⭐ WEBCAMS
+def get_webcams(location: str) -> Dict[str, Any]:
+    location = location.lower()
+    webcams = []
+
+    if any(x in location for x in ["arona", "cristianos", "vistas", "américas"]):
+        webcams.append({
+            "name": "Playa de Las Vistas (Arona)",
+            "url": "https://canariaslife.com/camaras-de-tenerife/arona/"
+        })
+
+    if "santa cruz" in location:
+        webcams.append({
+            "name": "Santa Cruz de Tenerife (Skyline)",
+            "url": "https://www.skylinewebcams.com/es/webcam/espana/canarias/santa-cruz-de-tenerife.html"
+        })
+
+    if not webcams:
+        webcams.append({
+            "name": "Webcams de Tenerife",
+            "url": "https://canariaslife.com/camaras-de-tenerife/"
+        })
+
+    return {"location": location, "webcams": webcams}
+
+
+webcam_schema = {
+    "name": "get_webcams",
+    "description": "Devuelve enlaces a webcams en directo según la zona indicada",
+    "parameters": {
+        "type": "object",
+        "properties": {"location": {"type": "string"}},
+        "required": ["location"],
+    },
+}
+
+
+# ⭐ BICICLETAS
+def get_bike_rentals(location: str) -> Dict[str, Any]:
+    return {
+        "location": location,
+        "rentals": [
+            {
+                "name": "BikePoint Tenerife",
+                "url": "https://bikepointtenerife.com/es/"
+            },
+            {
+                "name": "Cycling in Tenerife",
+                "url": "https://www.cyclingintenerife.com/es/alquiler-de-bicicletas-en-tenerife/"
+            }
+        ]
+    }
+
+
+bike_schema = {
+    "name": "get_bike_rentals",
+    "description": "Devuelve tiendas de alquiler de bicicletas en Tenerife",
+    "parameters": {
+        "type": "object",
+        "properties": {"location": {"type": "string"}},
+        "required": ["location"],
+    },
+}
+
+
+# ⭐ TRANSPORTE (opcional)
+def get_transport_info(origin: str, destination: str) -> Dict[str, Any]:
+    routes = [
+        {
+            "line": "TITSA 015",
+            "from": origin,
+            "to": destination,
+            "duration": "35 min",
+            "frequency": "Cada 20 min",
+            "url": "https://www.titsa.com/"
+        },
+        {
+            "line": "Moovit",
+            "from": origin,
+            "to": destination,
+            "duration": "30–45 min",
+            "frequency": "Variable",
+            "url": "https://moovitapp.com/"
+        }
+    ]
+
+    return {"origin": origin, "destination": destination, "routes": routes}
+
+
+transport_schema = {
+    "name": "get_transport_info",
+    "description": "Devuelve rutas aproximadas de transporte público entre dos puntos",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "origin": {"type": "string"},
+            "destination": {"type": "string"},
+        },
+        "required": ["origin", "destination"],
+    },
+}
+
+
+# ----------------------------------------------------------------------
+# 5. REGISTRO DE HERRAMIENTAS
 # ----------------------------------------------------------------------
 TOOLS = {
     "get_weather": get_weather,
     "get_bus_stops": get_bus_stops,
     "get_restaurant_offers": get_restaurant_offers,
+    "get_webcams": get_webcams,
+    "get_bike_rentals": get_bike_rentals,
+    # "get_transport_info": get_transport_info,  # activar si quieres
 }
 
+
 TOOLS_SCHEMAS = [
-    {
-        "type": "function",
-        "function": weather_schema,
-    },
-    {
-        "type": "function",
-        "function": bus_schema,
-    },
-    {
-        "type": "function",
-        "function": restaurant_schema,
-    },
+    {"type": "function", "function": weather_schema},
+    {"type": "function", "function": bus_schema},
+    {"type": "function", "function": restaurant_schema},
+    {"type": "function", "function": webcam_schema},
+    {"type": "function", "function": bike_schema},
+    # {"type": "function", "function": transport_schema},  # activar si quieres
 ]
 
 
 # ----------------------------------------------------------------------
-# 5. CLI PARA PRUEBAS
+# 6. CLI PARA PRUEBAS
 # ----------------------------------------------------------------------
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Probar herramientas del asistente turístico")
 
-    parser.add_argument("tool", choices=["weather", "bus", "restaurant"])
+    parser.add_argument("tool", choices=["weather", "bus", "restaurant", "webcams", "bikes"])
     parser.add_argument("--params", type=str)
 
     args = parser.parse_args()
@@ -335,3 +434,7 @@ if __name__ == "__main__":
         print(get_bus_stops(**params))
     elif args.tool == "restaurant":
         print(get_restaurant_offers(**params))
+    elif args.tool == "webcams":
+        print(get_webcams(**params))
+    elif args.tool == "bikes":
+        print(get_bike_rentals(**params))

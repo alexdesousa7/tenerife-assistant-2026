@@ -23,18 +23,41 @@ from .assistant_logging import logger, DEFAULT_MODEL, MAX_TOKENS_CONTEXT
 def should_use_rag(query: str) -> bool:
     """
     Decide si la consulta debe resolverse vía RAG o mediante una herramienta.
+    Si detecta palabras clave asociadas a una tool, devuelve False (usar tool).
     """
+    low = query.lower()
+
+    # Clima / tiempo
     weather_kw = {"tiempo", "clima", "lluvia", "temperatura", "pronóstico"}
-    transport_kw = {"guagua", "bus", "autobús", "transporte", "ruta", "horario"}
+
+    # Transporte (incluye TITSA / Moovit)
+    transport_kw = {
+        "guagua", "bus", "autobús", "transporte", "ruta", "horario",
+        "titsa", "moovit"
+    }
+
+    # Restaurantes / comida
     food_kw = {"restaurante", "comida", "oferta", "menú", "cocina"}
 
-    low = query.lower()
+    # Webcams
+    webcam_kw = {"webcam", "cámara", "camara", "playa en directo"}
+
+    # Bicicletas
+    bike_kw = {"bici", "bicicleta", "alquiler de bicicletas"}
+
+    # Si coincide con alguna tool → NO usar RAG
     if any(w in low for w in weather_kw):
         return False
     if any(w in low for w in transport_kw):
         return False
     if any(w in low for w in food_kw):
         return False
+    if any(w in low for w in webcam_kw):
+        return False
+    if any(w in low for w in bike_kw):
+        return False
+
+    # Si no coincide con ninguna tool → usar RAG
     return True
 
 

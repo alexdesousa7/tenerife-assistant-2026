@@ -5,7 +5,7 @@ Compatible con la API chat.completions.create (SDK OpenAI 1.x).
 
 import json
 import time
-from typing import Generator, Dict, Any, List
+from typing import Generator, Dict, List
 
 from openai import OpenAI
 from .rag import build_rag_pipeline

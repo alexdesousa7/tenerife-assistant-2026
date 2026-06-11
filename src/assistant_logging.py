@@ -9,6 +9,11 @@ import os
 from dotenv import load_dotenv
 
 # ----------------------------------------------------------------------
+# Configuración del logger del módulo
+# ----------------------------------------------------------------------
+logger = logging.getLogger(__name__)
+
+# ----------------------------------------------------------------------
 # Carga de variables de entorno (se ejecuta una sola vez)
 # ----------------------------------------------------------------------
 load_dotenv()
@@ -17,6 +22,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 if not OPENAI_API_KEY:
     logger.warning("OPENAI_API_KEY no está configurada. El asistente no podrá llamar al modelo.")
+
 
 
 # Modelo por defecto (puede sobrescribirse con la variable de entorno)

@@ -8,14 +8,12 @@ import logging
 import os
 from dotenv import load_dotenv
 
-# ----------------------------------------------------------------------
 # Configuración del logger del módulo
-# ----------------------------------------------------------------------
+
 logger = logging.getLogger(__name__)
 
-# ----------------------------------------------------------------------
 # Carga de variables de entorno
-# ----------------------------------------------------------------------
+
 load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -32,10 +30,9 @@ DEFAULT_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 # Tokens que reservamos al modelo para que la respuesta no lo agote
 MAX_TOKENS_CONTEXT: int = int(os.getenv("MAX_TOKENS_CONTEXT", "2500"))
 
-# ----------------------------------------------------------------------
 # Configuración de logging (nivel INFO por defecto, se puede sobreescribir
 # con la variable de entorno LOG_LEVEL)
-# ----------------------------------------------------------------------
+
 log_level_name = os.getenv("LOG_LEVEL", "INFO").upper()
 log_level = getattr(logging, log_level_name, logging.INFO)
 

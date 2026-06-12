@@ -17,9 +17,8 @@ from .tools import TOOLS
 from .assistant_logging import logger, DEFAULT_MODEL, MAX_TOKENS_CONTEXT
 
 
-# ----------------------------------------------------------------------
-# 1️⃣  Decisión: ¿usar RAG o herramienta?
-# ----------------------------------------------------------------------
+# 1.  Decisión: ¿usar RAG o herramienta?
+
 def should_use_rag(query: str) -> bool:
     """
     Decide si la consulta debe resolverse vía RAG o mediante una herramienta.
@@ -60,10 +59,8 @@ def should_use_rag(query: str) -> bool:
     # Si no coincide con ninguna tool → usar RAG
     return True
 
+# 2. Construcción de contexto RAG con citación numerada
 
-# ----------------------------------------------------------------------
-# 2️⃣  Construcción de contexto RAG con citación numerada
-# ----------------------------------------------------------------------
 def build_rag_context(query: str, rag_bundle: Dict[str, Any], k: int = 4) -> str:
     """
     Recupera los *k* fragmentos más relevantes del pipeline RAG y los
@@ -91,10 +88,8 @@ def build_rag_context(query: str, rag_bundle: Dict[str, Any], k: int = 4) -> str
     parts = [f"[{i+1}] {r['chunk'].strip()}" for i, r in enumerate(results)]
     return "\n".join(parts)
 
+# 3. Construir la lista de mensajes para OpenAI
 
-# ----------------------------------------------------------------------
-# 3️⃣  Construir la lista de mensajes para OpenAI
-# ----------------------------------------------------------------------
 def build_messages(
     user_query: str,
     rag_bundle: Dict[str, Any],
@@ -160,10 +155,8 @@ def build_messages(
 
     return msgs
 
+#4. Ejecutar herramienta externa
 
-# ----------------------------------------------------------------------
-# 4️⃣  Ejecutar herramienta externa
-# ----------------------------------------------------------------------
 def call_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
     """
     Ejecuta la herramienta registrada en ``src.tools``.
@@ -181,10 +174,8 @@ def call_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
         logger.exception(f"Error ejecutando {tool_name}")
         return {"error": f"Error al ejecutar {tool_name}: {str(exc)}"}
 
+# 5. Procesar la respuesta del LLM
 
-# ----------------------------------------------------------------------
-# 5️⃣  Procesar la respuesta del LLM
-# ----------------------------------------------------------------------
 def process_llm_response(
     response,
     original_query: str,

@@ -9,35 +9,31 @@ from dotenv import load_dotenv
 # Cargar variables de entorno
 load_dotenv()
 
-# ----------------------------------------------------------------------
 # Ajustar PYTHONPATH para permitir "import src..."
-# ----------------------------------------------------------------------
+
 ROOT = Path(__file__).resolve().parent
 sys.path.append(str(ROOT))
 
 from src.assistant import TenerifeAssistant
 from src.memory import ConversationMemory
 
-# ----------------------------------------------------------------------
 # Configuración de Streamlit
-# ----------------------------------------------------------------------
+
 st.set_page_config(
     page_title="Asistente Turístico Tenerife 2026",
     page_icon="🌋",
     layout="centered",
 )
 
-# ----------------------------------------------------------------------
-# Cabecera
-# ----------------------------------------------------------------------
+# Cabecera del Chatbot
+
 st.title("🏖️🌋 Asistente Turístico de Tenerife 2026 🏝️👙🌞")
 st.markdown("*Descubre la isla de Tenerife con inteligencia artificial*")
 
 st.divider()
 
-# ----------------------------------------------------------------------
 # Inicializar estado de la sesión
-# ----------------------------------------------------------------------
+
 if "assistant" not in st.session_state:
     with st.spinner("Cargando el asistente..."):
         try:
@@ -49,9 +45,8 @@ if "assistant" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# ----------------------------------------------------------------------
-# Barra lateral
-# ----------------------------------------------------------------------
+# Barra lateral donde se muestra la configuración y las herramientas disponibles
+
 with st.sidebar:
     st.header("Configuración")
 
@@ -75,21 +70,18 @@ with st.sidebar:
     st.markdown("- 🚴  `get_bike_rentals` (alquiler de bicicletas)")
     # st.markdown("- 🚌  `get_transport_info` (rutas TITSA/Moovit)")  # opcional
 
-# ----------------------------------------------------------------------
 # Mostrar historial del chat
-# ----------------------------------------------------------------------
+
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# ----------------------------------------------------------------------
-# Prompt del usuario
-# ----------------------------------------------------------------------
+# Prompt del usuario, por defecto vacío pero nos sugerirñá "¿Qué quieres saber sobre Tenerife?"
+
 prompt = st.chat_input("¿Qué quieres saber sobre Tenerife?")
 
-# ----------------------------------------------------------------------
-# Procesar respuesta del asistente
-# ----------------------------------------------------------------------
+# Procesar respuesta del asistente, segun sea el caso (con o sin herramientas)
+
 if prompt:
     # Guardar y mostrar mensaje del usuario
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -154,7 +146,7 @@ if prompt:
             {"role": "assistant", "content": full_response}
         )
 
-# ----------------------------------------------------------------------
+
 # Pie de página
-# ----------------------------------------------------------------------
+
 st.divider()

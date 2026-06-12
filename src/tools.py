@@ -31,10 +31,8 @@ logger = logging.getLogger(__name__)
 DEFAULT_TIMEOUT = 10
 WIND_SPEED_CONVERSION = 3.6  # m/s → km/h
 
+# Modelo de respuesta para la herramienta del clima.
 
-# ----------------------------------------------------------------------
-# MODELO DE RESPUESTA METEOROLÓGICA
-# ----------------------------------------------------------------------
 @dataclass
 class WeatherResponse:
     location: str
@@ -46,9 +44,8 @@ class WeatherResponse:
     error: Optional[str] = None
 
 
-# ----------------------------------------------------------------------
-# 1. HERRAMIENTA REAL: Predicción del tiempo
-# ----------------------------------------------------------------------
+# 1. Uso de la herramienta real: Predicción del tiempo
+
 def get_weather(location: str, date: str = None) -> Dict[str, Any]:
 
     NORMALIZED_LOCATIONS = {
@@ -133,10 +130,9 @@ weather_schema = {
     },
 }
 
+# 2. Herramienta: Paradas de guagua
+# En Tenerife al transporte publico se le llama "guagua".
 
-# ----------------------------------------------------------------------
-# 2. HERRAMIENTA: Paradas de guagua
-# ----------------------------------------------------------------------
 def get_bus_stops(location: str) -> Dict[str, Any]:
     api_url = os.getenv("BUS_API_URL")
 
@@ -217,10 +213,8 @@ bus_schema = {
     },
 }
 
+# 3. Herramienta: Ofertas gastronómicas
 
-# ----------------------------------------------------------------------
-# 3. HERRAMIENTA: Ofertas gastronómicas
-# ----------------------------------------------------------------------
 def get_restaurant_offers(location: str) -> Dict[str, Any]:
     api_url = os.getenv("RESTAURANT_API_URL")
 
@@ -281,12 +275,8 @@ restaurant_schema = {
     },
 }
 
+# 4. Herramienta: Webcams en directo de Tenerife.
 
-# ----------------------------------------------------------------------
-# 4. NUEVAS TOOLS
-# ----------------------------------------------------------------------
-
-# ⭐ WEBCAMS
 def get_webcams(location: str) -> Dict[str, Any]:
     location = location.lower()
     webcams = []
@@ -322,8 +312,8 @@ webcam_schema = {
     },
 }
 
+# 5. Herramienta: Alquiler de Bicicletas
 
-# ⭐ BICICLETAS
 def get_bike_rentals(location: str) -> Dict[str, Any]:
     return {
         "location": location,
@@ -350,8 +340,8 @@ bike_schema = {
     },
 }
 
+# 6. Herramienta: Transporte (2da herramienta de transporte opcional)
 
-# ⭐ TRANSPORTE (opcional)
 def get_transport_info(origin: str, destination: str) -> Dict[str, Any]:
     routes = [
         {
@@ -388,10 +378,8 @@ transport_schema = {
     },
 }
 
+# 7. Registro de las herramientas para su uso en el asistente.
 
-# ----------------------------------------------------------------------
-# 5. REGISTRO DE HERRAMIENTAS
-# ----------------------------------------------------------------------
 TOOLS = {
     "get_weather": get_weather,
     "get_bus_stops": get_bus_stops,
@@ -411,10 +399,8 @@ TOOLS_SCHEMAS = [
     # {"type": "function", "function": transport_schema},  # activar si quieres
 ]
 
+# 8. CLI para pruebar herramientas individualmente desde la terminal (opcional)
 
-# ----------------------------------------------------------------------
-# 6. CLI PARA PRUEBAS
-# ----------------------------------------------------------------------
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Probar herramientas del asistente turístico")
 

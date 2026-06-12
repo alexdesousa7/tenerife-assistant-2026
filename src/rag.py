@@ -55,10 +55,7 @@ def _get_client() -> Optional[OpenAI]:
         _client = OpenAI(api_key=OPENAI_API_KEY)
     return _client
 
-
-# =============================================================================
-# 1. CARGA DE DOCUMENTOS
-# =============================================================================
+# 1. Carga de documentos en este caso PDF
 
 def load_pdf(pdf_path: str) -> List[str]:
     """
@@ -89,10 +86,7 @@ def load_pdf(pdf_path: str) -> List[str]:
         logger.error(f"Error al leer PDF: {e}")
         raise
 
-
-# =============================================================================
-# 2. SEGMENTACIÓN DE TEXTO
-# =============================================================================
+# 2. Segmentacion del texto en chunks con metadatos para citación
 
 def chunk_text(
     pages: List[str],
@@ -131,10 +125,7 @@ def chunk_text(
     logger.info(f"Texto segmentado en {len(chunks)} chunks con metadatos")
     return chunks, metadata
 
-
-# =============================================================================
-# 3. GENERACIÓN DE EMBEDDINGS
-# =============================================================================
+# 3. Generacion de embeddings (OpenAI o fallback local para CI/tessts)
 
 def embed_chunks(chunks: List[str]) -> np.ndarray:
     """
@@ -175,10 +166,7 @@ def embed_chunks(chunks: List[str]) -> np.ndarray:
         logger.error(f"Error al generar embeddings: {e}")
         raise RuntimeError(f"Fallo en generación de embeddings: {e}")
 
-
-# =============================================================================
-# 4. CONSTRUCCIÓN DE ÍNDICE FAISS
-# =============================================================================
+# 4. Construcción de indice FAISS
 
 def build_faiss_index(embeddings: np.ndarray) -> faiss.Index:
     """Construye un índice FAISS para búsquedas eficientes."""
@@ -191,10 +179,7 @@ def build_faiss_index(embeddings: np.ndarray) -> faiss.Index:
     logger.info(f"Índice FAISS creado con {index.ntotal} vectores")
     return index
 
-
-# =============================================================================
-# 5. BÚSQUEDA SEMÁNTICA
-# =============================================================================
+# 5. Busqueda Semantica con recuperación de metadatos para citación.
 
 def retrieve(
     query: str,
@@ -247,10 +232,7 @@ def retrieve(
         logger.error(f"Error en búsqueda: {e}")
         return []
 
-
-# =============================================================================
-# 6. PIPELINE COMPLETO
-# =============================================================================
+# 6. Pipeline completo RAG con metadatos para citacion.
 
 def build_rag_pipeline(pdf_path: str) -> Dict[str, Any]:
     """Construye el pipeline completo RAG con metadatos para citación."""

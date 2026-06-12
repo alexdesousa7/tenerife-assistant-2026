@@ -55,10 +55,9 @@ class TenerifeAssistant:
         )
 
         logger.info("TenerifeAssistant listo para responder preguntas.")
-
-    # ------------------------------------------------------------------
+    
     # Lazy loading del cliente OpenAI
-    # ------------------------------------------------------------------
+    
     def _get_client(self):
         """Crea el cliente OpenAI solo cuando es necesario."""
         if self.client is None:
@@ -67,19 +66,18 @@ class TenerifeAssistant:
             self.client = OpenAI(api_key=OPENAI_API_KEY)
         return self.client
 
-    # ------------------------------------------------------------------
-    # 1️⃣  Respuesta completa (no streaming)
-    # ------------------------------------------------------------------
+    
+    # 1. Respuesta completa (no streaming)
+    
     def answer(self, user_query: str) -> str:
         """
         Genera una respuesta completa.
         Si no hay OPENAI_API_KEY → modo offline (para CI/tests).
         """
         logger.info(f"Consulta recibida: '{user_query[:50]}'")
-
-        # ------------------------------
-        # 🔹 MODO OFFLINE (CI / tests)
-        # ------------------------------
+        
+        # 🔹 Modo Offile (CI - Git Actions / tests)
+        
         if not OPENAI_API_KEY:
             logger.warning("Modo offline: generando respuesta sin modelo OpenAI")
 
@@ -91,10 +89,9 @@ class TenerifeAssistant:
             # RAG offline
             chunk = self.rag_bundle["chunks"][0]
             return f"{chunk[:150]}... [1]"
-
-        # ------------------------------
-        # 🔹 MODO NORMAL (con OpenAI)
-        # ------------------------------
+        
+        # 🔹 Modo Normal (con OpenAI)
+        
         client = self._get_client()
         use_rag = should_use_rag(user_query)
 
@@ -129,9 +126,9 @@ class TenerifeAssistant:
             logger.exception("Error al generar la respuesta")
             return "Lo siento, hubo un problema técnico al procesar tu solicitud."
 
-    # ------------------------------------------------------------------
-    # 2️⃣  Respuesta en streaming
-    # ------------------------------------------------------------------
+    
+    # 2. Respuesta en streaming
+    
     def answer_stream(self, user_query: str) -> Generator[str, None, None]:
         """
         Streaming usando la API chat.completions.create.
@@ -212,9 +209,9 @@ class TenerifeAssistant:
                 logger.exception("Error en la segunda llamada al LLM")
                 yield "Lo siento, hubo un error al procesar el resultado de la herramienta."
 
-    # ------------------------------------------------------------------
+    
     # Métodos auxiliares públicos
-    # ------------------------------------------------------------------
+    
     def get_memory_snapshot(self) -> List[Dict[str, str]]:
         return self.memory.get_history()
 

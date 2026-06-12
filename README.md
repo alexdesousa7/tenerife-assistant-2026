@@ -75,7 +75,7 @@ Este proyecto incluye un **Makefile** que automatiza:
 - registro del kernel de Jupyter  
 - preparación del proyecto  
 
-## Ejecutar instalación automática:
+## 1. Ejecutar instalación automática:
 
 ```bash
 make setup
@@ -305,5 +305,19 @@ tenerife-assistant-2026/
 - Chunking básico  
 - Sin reranking  
 - Evaluación limitada  
+
+### Mejoras futuras
+
+- Implementar chunking semántico.
+- Añadir un reranker para mejorar la recuperación.
+- Integrar APIs reales para transporte, webcams y restaurantes.
+- Mejorar la memoria conversacional (memoria híbrida).
+- Añadir métricas de evaluación específicas para RAG.
+- Integrar observabilidad (LangSmith, W&B).
+- Mejorar la interfaz Streamlit con más opciones.
+- Añadir soporte multimodal (imágenes).
+- Añadir un despliegue en Docker para facilitar la portabilidad y la ejecución del asistente sin necesidad de configurar Python localmente.
+- Permitir ejecución offline con modelos locales.
+
 
 ---
